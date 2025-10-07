@@ -1,0 +1,141 @@
+:root {
+  color-scheme: light;
+  --smedico-primary: #2f6bff;
+  --smedico-primary-contrast: #f7f9ff;
+  --smedico-secondary: #6c5ce7;
+  --smedico-accent: #00cec9;
+  --smedico-surface: #ffffff;
+  --smedico-surface-alt: #f5f7fb;
+  --smedico-sidebar-bg: #101828;
+  --smedico-sidebar-text: rgba(255, 255, 255, 0.88);
+  --smedico-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --smedico-text-primary: #1f2937;
+  --smedico-text-muted: #6b7280;
+  --smedico-border-subtle: rgba(15, 23, 42, 0.08);
+  --smedico-border-strong: rgba(15, 23, 42, 0.16);
+  --smedico-pill-bg: rgba(47, 107, 255, 0.1);
+  --smedico-pill-text: #2f6bff;
+  --smedico-shadow: 0 20px 45px -24px rgba(15, 23, 42, 0.45);
+  --smedico-danger: #ef4444;
+  --smedico-success: #16a34a;
+  --smedico-warning: #f59e0b;
+  --smedico-font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--smedico-font-family);
+  background: var(--smedico-surface-alt);
+  color: var(--smedico-text-primary);
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--smedico-text-primary);
+  margin: 0;
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+.card {
+  background: var(--smedico-surface);
+  border-radius: 1rem;
+  border: 1px solid var(--smedico-border-subtle);
+  padding: 1.5rem;
+  box-shadow: var(--smedico-shadow);
+}
+
+.btn-primary {
+  background: var(--smedico-primary);
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  color: var(--smedico-primary-contrast);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.65rem 1.5rem;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -12px rgba(47, 107, 255, 0.6);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge--success {
+  background: rgba(22, 163, 74, 0.15);
+  color: var(--smedico-success);
+}
+
+.badge--danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--smedico-danger);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--smedico-border-subtle);
+}
+
+.table thead th {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--smedico-text-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --smedico-surface: #111827;
+    --smedico-surface-alt: #0f172a;
+    --smedico-sidebar-bg: #0b1120;
+    --smedico-sidebar-text: rgba(255, 255, 255, 0.92);
+    --smedico-sidebar-hover: rgba(59, 130, 246, 0.24);
+    --smedico-text-primary: #f8fafc;
+    --smedico-text-muted: rgba(226, 232, 240, 0.72);
+    --smedico-border-subtle: rgba(148, 163, 184, 0.18);
+    --smedico-border-strong: rgba(148, 163, 184, 0.32);
+    --smedico-pill-bg: rgba(59, 130, 246, 0.2);
+    --smedico-pill-text: #dbeafe;
+    --smedico-shadow: 0 20px 45px -28px rgba(15, 23, 42, 0.75);
+  }
+}
