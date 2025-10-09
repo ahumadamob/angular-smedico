@@ -82,6 +82,38 @@ button {
   box-shadow: 0 12px 24px -12px rgba(47, 107, 255, 0.6);
 }
 
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--smedico-border-subtle);
+  border-radius: 0.75rem;
+  color: var(--smedico-text-primary);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.65rem 1.5rem;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(47, 107, 255, 0.08);
+  border-color: rgba(47, 107, 255, 0.32);
+}
+
+.btn-danger {
+  background: var(--smedico-danger);
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.65rem 1.5rem;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -12px rgba(239, 68, 68, 0.6);
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
