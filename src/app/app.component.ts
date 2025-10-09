@@ -24,6 +24,7 @@ export class AppComponent {
   readonly navigationLinks = signal<NavigationLink[]>([
     { label: 'Dashboard', route: '/dashboard', exact: true }
   ]);
+  readonly currentYear = new Date().getFullYear();
 
   trackByRoute(_: number, link: NavigationLink): string {
     return link.route;
