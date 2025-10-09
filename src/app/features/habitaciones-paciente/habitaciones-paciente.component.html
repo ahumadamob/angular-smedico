@@ -1,0 +1,146 @@
+<section class="feature">
+  <header class="feature__header">
+    <div>
+      <h2>Habitaciones</h2>
+      <p class="feature__subtitle">Gestiona la disponibilidad de habitaciones para pacientes internados.</p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="startCreate()" [disabled]="saving() || deleting()">
+      Nueva habitación
+    </button>
+  </header>
+
+  <div class="feature__body">
+    <div class="alert alert--error" *ngIf="error() as errorMessage">{{ errorMessage }}</div>
+
+    <div class="card">
+      <div class="card__body">
+        <div class="table-wrapper" *ngIf="hasItems(); else emptyState">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Habitación</th>
+                <th>Piso</th>
+                <th>Sector</th>
+                <th>Camas disponibles</th>
+                <th class="table__actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items(); trackBy: trackById">
+                <td>{{ item.id | number }}</td>
+                <td>#{{ item.numeroHabitacion | number }}</td>
+                <td>{{ item.piso | number }}</td>
+                <td>{{ item.sector }}</td>
+                <td>{{ item.camasDisponibles | number }}</td>
+                <td class="table__actions">
+                  <button type="button" class="btn btn--ghost" (click)="startEdit(item)" [disabled]="saving() || deleting()">
+                    Editar
+                  </button>
+                  <button type="button" class="btn btn--danger" (click)="promptDelete(item)" [disabled]="saving() || deleting()">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyState>
+          <div class="empty" *ngIf="!loading(); else loadingState">
+            <p>No hay habitaciones registradas.</p>
+          </div>
+        </ng-template>
+        <ng-template #loadingState>
+          <div class="loading">Cargando habitaciones...</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="card form-card" *ngIf="showForm()">
+      <form [formGroup]="form" (ngSubmit)="submitForm()">
+        <h3 class="form-card__title">{{ selectedItem() ? 'Editar habitación' : 'Nueva habitación' }}</h3>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Número de habitación</span>
+            <input
+              type="number"
+              formControlName="numeroHabitacion"
+              min="1"
+              [class.invalid]="form.controls.numeroHabitacion.invalid && form.controls.numeroHabitacion.touched"
+            />
+            <span class="error" *ngIf="form.controls.numeroHabitacion.errors && form.controls.numeroHabitacion.touched">
+              <ng-container *ngIf="form.controls.numeroHabitacion.hasError('required')">El número es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.numeroHabitacion.hasError('min')">Debe ser al menos 1.</ng-container>
+              <ng-container *ngIf="form.controls.numeroHabitacion.hasError('api')">{{ form.controls.numeroHabitacion.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Piso</span>
+            <input type="number" formControlName="piso" [class.invalid]="form.controls.piso.invalid && form.controls.piso.touched" />
+            <span class="error" *ngIf="form.controls.piso.errors && form.controls.piso.touched">
+              <ng-container *ngIf="form.controls.piso.hasError('required')">El piso es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.piso.hasError('api')">{{ form.controls.piso.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Sector</span>
+            <input type="text" formControlName="sector" [class.invalid]="form.controls.sector.invalid && form.controls.sector.touched" />
+            <span class="error" *ngIf="form.controls.sector.errors && form.controls.sector.touched">
+              <ng-container *ngIf="form.controls.sector.hasError('required')">El sector es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.sector.hasError('minlength')">Debe tener al menos 2 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.sector.hasError('maxlength')">No debe superar 50 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.sector.hasError('api')">{{ form.controls.sector.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Camas disponibles</span>
+            <input
+              type="number"
+              formControlName="camasDisponibles"
+              min="0"
+              [class.invalid]="form.controls.camasDisponibles.invalid && form.controls.camasDisponibles.touched"
+            />
+            <span class="error" *ngIf="form.controls.camasDisponibles.errors && form.controls.camasDisponibles.touched">
+              <ng-container *ngIf="form.controls.camasDisponibles.hasError('required')">Este campo es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.camasDisponibles.hasError('min')">Debe ser 0 o mayor.</ng-container>
+              <ng-container *ngIf="form.controls.camasDisponibles.hasError('api')">{{ form.controls.camasDisponibles.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field form-field--full">
+            <span>Descripción</span>
+            <textarea rows="3" formControlName="descripcion" [class.invalid]="form.controls.descripcion.invalid && form.controls.descripcion.touched"></textarea>
+            <span class="error" *ngIf="form.controls.descripcion.errors && form.controls.descripcion.touched">
+              <ng-container *ngIf="form.controls.descripcion.hasError('maxlength')">No debe superar 200 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.descripcion.hasError('api')">{{ form.controls.descripcion.getError('api') }}</ng-container>
+            </span>
+          </label>
+        </div>
+
+        <div class="form-card__actions">
+          <button type="button" class="btn btn--ghost" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+          <button type="submit" class="btn btn--primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="confirmDeleteOpen()"
+  title="Eliminar habitación"
+  message="¿Seguro que deseas eliminar esta habitación?"
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  [busy]="deleting()"
+  busyLabel="Eliminando..."
+  [confirmDestructive]="true"
+  (cancel)="closeDeleteDialog()"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>

@@ -22,7 +22,15 @@ export class AppComponent {
 
   readonly environmentLabel = computed(() => this.environmentService.environmentLabel);
   readonly navigationLinks = signal<NavigationLink[]>([
-    { label: 'Dashboard', route: '/dashboard', exact: true }
+    { label: 'Dashboard', route: '/dashboard', exact: true },
+    { label: 'Especialidades', route: '/especialidades' },
+    { label: 'Estados de turno', route: '/estados-turno' },
+    { label: 'Medios de pago', route: '/medios-pago' },
+    { label: 'Motivos de cancelación', route: '/motivos-cancelacion' },
+    { label: 'Medicamentos', route: '/medicamentos' },
+    { label: 'Consultorios', route: '/consultorios' },
+    { label: 'Habitaciones', route: '/habitaciones' },
+    { label: 'Obras sociales', route: '/obras-sociales' }
   ]);
   readonly currentYear = new Date().getFullYear();
 

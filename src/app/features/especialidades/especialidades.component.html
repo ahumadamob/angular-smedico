@@ -1,0 +1,116 @@
+<section class="feature">
+  <header class="feature__header">
+    <div>
+      <h2>Especialidades</h2>
+      <p class="feature__subtitle">Gestiona las especialidades médicas disponibles.</p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="startCreate()" [disabled]="saving() || deleting()">
+      Nueva especialidad
+    </button>
+  </header>
+
+  <div class="feature__body">
+    <div class="alert alert--error" *ngIf="error() as errorMessage">{{ errorMessage }}</div>
+
+    <div class="card">
+      <div class="card__body">
+        <div class="table-wrapper" *ngIf="hasItems(); else emptyState">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th class="table__actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items(); trackBy: trackById">
+                <td>{{ item.id | number }}</td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.descripcion }}</td>
+                <td class="table__actions">
+                  <button type="button" class="btn btn--ghost" (click)="startEdit(item)" [disabled]="saving() || deleting()">
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn--danger"
+                    (click)="promptDelete(item)"
+                    [disabled]="saving() || deleting()"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyState>
+          <div class="empty" *ngIf="!loading(); else loadingState">
+            <p>No hay especialidades registradas todavía.</p>
+          </div>
+        </ng-template>
+        <ng-template #loadingState>
+          <div class="loading">Cargando especialidades...</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="card form-card" *ngIf="showForm()">
+      <form [formGroup]="form" (ngSubmit)="submitForm()">
+        <h3 class="form-card__title">
+          {{ selectedItem() ? 'Editar especialidad' : 'Nueva especialidad' }}
+        </h3>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Nombre</span>
+            <input type="text" formControlName="nombre" [class.invalid]="form.controls.nombre.invalid && form.controls.nombre.touched" />
+            <span class="error" *ngIf="form.controls.nombre.errors && form.controls.nombre.touched">
+              <ng-container *ngIf="form.controls.nombre.hasError('required')">El nombre es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('minlength')">Debe tener al menos 2 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('maxlength')">No debe superar 30 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('api')">{{ form.controls.nombre.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Descripción</span>
+            <textarea
+              rows="3"
+              formControlName="descripcion"
+              [class.invalid]="form.controls.descripcion.invalid && form.controls.descripcion.touched"
+            ></textarea>
+            <span class="error" *ngIf="form.controls.descripcion.errors && form.controls.descripcion.touched">
+              <ng-container *ngIf="form.controls.descripcion.hasError('required')">La descripción es obligatoria.</ng-container>
+              <ng-container *ngIf="form.controls.descripcion.hasError('minlength')">Debe tener al menos 2 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.descripcion.hasError('maxlength')">No debe superar 500 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.descripcion.hasError('api')">{{ form.controls.descripcion.getError('api') }}</ng-container>
+            </span>
+          </label>
+        </div>
+
+        <div class="form-card__actions">
+          <button type="button" class="btn btn--ghost" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+          <button type="submit" class="btn btn--primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="confirmDeleteOpen()"
+  title="Eliminar especialidad"
+  message="¿Seguro que deseas eliminar esta especialidad? Esta acción no se puede deshacer."
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  [busy]="deleting()"
+  busyLabel="Eliminando..."
+  [confirmDestructive]="true"
+  (cancel)="closeDeleteDialog()"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>

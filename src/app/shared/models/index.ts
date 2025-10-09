@@ -29,3 +29,12 @@ export interface PaginatedResponse<T> {
 export interface Identifiable<ID = number> {
   id: ID;
 }
+
+export * from './consultorio.model';
+export * from './especialidad.model';
+export * from './estado-turno.model';
+export * from './habitacion-paciente.model';
+export * from './medio-pago.model';
+export * from './medicamento.model';
+export * from './motivo-cancelacion.model';
+export * from './obra-social.model';
