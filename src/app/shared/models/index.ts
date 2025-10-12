@@ -31,10 +31,14 @@ export interface Identifiable<ID = number> {
 }
 
 export * from './consultorio.model';
+export * from './asistente.model';
+export * from './direccion-paciente.model';
 export * from './especialidad.model';
 export * from './estado-turno.model';
+export * from './historial-paciente.model';
 export * from './habitacion-paciente.model';
 export * from './medio-pago.model';
 export * from './medicamento.model';
 export * from './motivo-cancelacion.model';
 export * from './obra-social.model';
+export * from './paciente.model';

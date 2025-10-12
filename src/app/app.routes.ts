@@ -11,6 +11,28 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent)
   },
   {
+    path: 'pacientes',
+    loadComponent: () => import('./features/pacientes/pacientes.component').then((m) => m.PacientesComponent)
+  },
+  {
+    path: 'direcciones-paciente',
+    loadComponent: () =>
+      import('./features/direcciones-paciente/direcciones-paciente.component').then(
+        (m) => m.DireccionesPacienteComponent
+      )
+  },
+  {
+    path: 'historial-pacientes',
+    loadComponent: () =>
+      import('./features/historial-pacientes/historial-pacientes.component').then(
+        (m) => m.HistorialPacientesComponent
+      )
+  },
+  {
+    path: 'asistentes',
+    loadComponent: () => import('./features/asistentes/asistentes.component').then((m) => m.AsistentesComponent)
+  },
+  {
     path: 'especialidades',
     loadComponent: () =>
       import('./features/especialidades/especialidades.component').then((m) => m.EspecialidadesComponent)

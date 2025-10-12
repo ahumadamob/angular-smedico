@@ -1,0 +1,148 @@
+<section class="feature">
+  <header class="feature__header">
+    <div>
+      <h2>Direcciones de pacientes</h2>
+      <p class="feature__subtitle">Gestiona las direcciones asociadas a los pacientes.</p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="startCreate()" [disabled]="saving() || deleting()">
+      Nueva dirección
+    </button>
+  </header>
+
+  <div class="feature__body">
+    <div class="alert alert--error" *ngIf="error() as errorMessage">{{ errorMessage }}</div>
+
+    <div class="card">
+      <div class="card__body">
+        <div class="table-wrapper" *ngIf="hasItems(); else emptyState">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Calle</th>
+                <th>Número</th>
+                <th>Localidad</th>
+                <th>Provincia</th>
+                <th>Código postal</th>
+                <th class="table__actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items(); trackBy: trackById">
+                <td>{{ item.id | number }}</td>
+                <td>{{ item.calle || '—' }}</td>
+                <td>{{ item.numero ?? '—' }}</td>
+                <td>{{ item.localidad || '—' }}</td>
+                <td>{{ item.provincia || '—' }}</td>
+                <td>{{ item.ccpp || '—' }}</td>
+                <td class="table__actions">
+                  <button type="button" class="btn btn--ghost" (click)="startEdit(item)" [disabled]="saving() || deleting()">
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn--danger"
+                    (click)="promptDelete(item)"
+                    [disabled]="saving() || deleting()"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyState>
+          <div class="empty" *ngIf="!loading(); else loadingState">
+            <p>No hay direcciones registradas.</p>
+          </div>
+        </ng-template>
+        <ng-template #loadingState>
+          <div class="loading">Cargando direcciones...</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="card form-card" *ngIf="showForm()">
+      <form [formGroup]="form" (ngSubmit)="submitForm()">
+        <h3 class="form-card__title">{{ selectedItem() ? 'Editar dirección' : 'Nueva dirección' }}</h3>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Calle</span>
+            <input type="text" formControlName="calle" [class.invalid]="form.controls.calle.invalid && form.controls.calle.touched" />
+            <span class="error" *ngIf="form.controls.calle.errors && form.controls.calle.touched">
+              <ng-container *ngIf="form.controls.calle.hasError('required')">La calle es obligatoria.</ng-container>
+              <ng-container *ngIf="form.controls.calle.hasError('maxlength')">No debe superar 150 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.calle.hasError('api')">{{ form.controls.calle.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Número</span>
+            <input
+              type="number"
+              formControlName="numero"
+              min="0"
+              [class.invalid]="form.controls.numero.invalid && form.controls.numero.touched"
+            />
+            <span class="error" *ngIf="form.controls.numero.errors && form.controls.numero.touched">
+              <ng-container *ngIf="form.controls.numero.hasError('required')">El número es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.numero.hasError('min')">Debe ser mayor o igual a 0.</ng-container>
+              <ng-container *ngIf="form.controls.numero.hasError('api')">{{ form.controls.numero.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Localidad</span>
+            <input type="text" formControlName="localidad" [class.invalid]="form.controls.localidad.invalid && form.controls.localidad.touched" />
+            <span class="error" *ngIf="form.controls.localidad.errors && form.controls.localidad.touched">
+              <ng-container *ngIf="form.controls.localidad.hasError('required')">La localidad es obligatoria.</ng-container>
+              <ng-container *ngIf="form.controls.localidad.hasError('maxlength')">No debe superar 120 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.localidad.hasError('api')">{{ form.controls.localidad.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Provincia</span>
+            <input type="text" formControlName="provincia" [class.invalid]="form.controls.provincia.invalid && form.controls.provincia.touched" />
+            <span class="error" *ngIf="form.controls.provincia.errors && form.controls.provincia.touched">
+              <ng-container *ngIf="form.controls.provincia.hasError('required')">La provincia es obligatoria.</ng-container>
+              <ng-container *ngIf="form.controls.provincia.hasError('maxlength')">No debe superar 120 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.provincia.hasError('api')">{{ form.controls.provincia.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Código postal</span>
+            <input type="text" formControlName="ccpp" [class.invalid]="form.controls.ccpp.invalid && form.controls.ccpp.touched" />
+            <span class="error" *ngIf="form.controls.ccpp.errors && form.controls.ccpp.touched">
+              <ng-container *ngIf="form.controls.ccpp.hasError('maxlength')">No debe superar 20 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.ccpp.hasError('api')">{{ form.controls.ccpp.getError('api') }}</ng-container>
+            </span>
+          </label>
+        </div>
+
+        <div class="form-card__actions">
+          <button type="button" class="btn btn--ghost" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+          <button type="submit" class="btn btn--primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="confirmDeleteOpen()"
+  title="Eliminar dirección"
+  message="¿Seguro que deseas eliminar esta dirección?"
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  [busy]="deleting()"
+  busyLabel="Eliminando..."
+  [confirmDestructive]="true"
+  (cancel)="closeDeleteDialog()"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>

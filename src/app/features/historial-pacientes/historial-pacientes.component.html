@@ -1,0 +1,140 @@
+<section class="feature">
+  <header class="feature__header">
+    <div>
+      <h2>Historial de pacientes</h2>
+      <p class="feature__subtitle">Registra eventos importantes en la evolución clínica de los pacientes.</p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="startCreate()" [disabled]="saving() || deleting()">
+      Nuevo evento
+    </button>
+  </header>
+
+  <div class="feature__body">
+    <div class="alert alert--error" *ngIf="error() as errorMessage">{{ errorMessage }}</div>
+    <div class="alert alert--error" *ngIf="auxError() as auxErrorMessage">{{ auxErrorMessage }}</div>
+
+    <div class="card">
+      <div class="card__body">
+        <div class="table-wrapper" *ngIf="hasItems(); else emptyState">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Paciente</th>
+                <th>Evento</th>
+                <th>Fecha</th>
+                <th>Observación</th>
+                <th class="table__actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items(); trackBy: trackById">
+                <td>{{ item.id | number }}</td>
+                <td>{{ pacienteNombre(item.pacienteId) }}</td>
+                <td>{{ item.evento }}</td>
+                <td>{{ item.fecha | date : 'dd/MM/yyyy' }}</td>
+                <td>{{ item.observacion || '—' }}</td>
+                <td class="table__actions">
+                  <button type="button" class="btn btn--ghost" (click)="startEdit(item)" [disabled]="saving() || deleting()">
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn--danger"
+                    (click)="promptDelete(item)"
+                    [disabled]="saving() || deleting()"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyState>
+          <div class="empty" *ngIf="!loading(); else loadingState">
+            <p>No hay eventos en el historial por el momento.</p>
+          </div>
+        </ng-template>
+        <ng-template #loadingState>
+          <div class="loading">Cargando historial...</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="card form-card" *ngIf="showForm()">
+      <form [formGroup]="form" (ngSubmit)="submitForm()">
+        <h3 class="form-card__title">{{ selectedItem() ? 'Editar evento' : 'Nuevo evento' }}</h3>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Paciente</span>
+            <select formControlName="pacienteId" [class.invalid]="form.controls.pacienteId.invalid && form.controls.pacienteId.touched">
+              <option value="0" disabled>Selecciona un paciente</option>
+              <option *ngFor="let paciente of pacientes(); trackBy: trackByPacienteId" [value]="paciente.id">
+                {{ paciente.apellido }}, {{ paciente.nombre }}
+              </option>
+            </select>
+            <span class="error" *ngIf="form.controls.pacienteId.errors && form.controls.pacienteId.touched">
+              <ng-container *ngIf="form.controls.pacienteId.hasError('required') || form.controls.pacienteId.hasError('min')">
+                Debes seleccionar un paciente.
+              </ng-container>
+              <ng-container *ngIf="form.controls.pacienteId.hasError('api')">
+                {{ form.controls.pacienteId.getError('api') }}
+              </ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Evento</span>
+            <input type="text" formControlName="evento" [class.invalid]="form.controls.evento.invalid && form.controls.evento.touched" />
+            <span class="error" *ngIf="form.controls.evento.errors && form.controls.evento.touched">
+              <ng-container *ngIf="form.controls.evento.hasError('required')">El evento es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.evento.hasError('minlength')">Debe tener al menos 3 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.evento.hasError('maxlength')">No debe superar 100 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.evento.hasError('api')">{{ form.controls.evento.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Fecha</span>
+            <input type="date" formControlName="fecha" [class.invalid]="form.controls.fecha.invalid && form.controls.fecha.touched" />
+            <span class="error" *ngIf="form.controls.fecha.errors && form.controls.fecha.touched">
+              <ng-container *ngIf="form.controls.fecha.hasError('required')">La fecha es obligatoria.</ng-container>
+              <ng-container *ngIf="form.controls.fecha.hasError('api')">{{ form.controls.fecha.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field form-field--full">
+            <span>Observación</span>
+            <textarea rows="3" formControlName="observacion" [class.invalid]="form.controls.observacion.invalid && form.controls.observacion.touched"></textarea>
+            <span class="error" *ngIf="form.controls.observacion.errors && form.controls.observacion.touched">
+              <ng-container *ngIf="form.controls.observacion.hasError('maxlength')">No debe superar 255 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.observacion.hasError('api')">{{ form.controls.observacion.getError('api') }}</ng-container>
+            </span>
+          </label>
+        </div>
+
+        <div class="form-card__actions">
+          <button type="button" class="btn btn--ghost" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+          <button type="submit" class="btn btn--primary" [disabled]="saving() || !hasPacientes()">
+            {{ saving() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="confirmDeleteOpen()"
+  title="Eliminar evento"
+  message="¿Seguro que deseas eliminar este evento del historial?"
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  [busy]="deleting()"
+  busyLabel="Eliminando..."
+  [confirmDestructive]="true"
+  (cancel)="closeDeleteDialog()"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>

@@ -23,6 +23,10 @@ export class AppComponent {
   readonly environmentLabel = computed(() => this.environmentService.environmentLabel);
   readonly navigationLinks = signal<NavigationLink[]>([
     { label: 'Dashboard', route: '/dashboard', exact: true },
+    { label: 'Pacientes', route: '/pacientes' },
+    { label: 'Direcciones de pacientes', route: '/direcciones-paciente' },
+    { label: 'Historial de pacientes', route: '/historial-pacientes' },
+    { label: 'Asistentes', route: '/asistentes' },
     { label: 'Especialidades', route: '/especialidades' },
     { label: 'Estados de turno', route: '/estados-turno' },
     { label: 'Medios de pago', route: '/medios-pago' },

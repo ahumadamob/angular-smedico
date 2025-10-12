@@ -3,11 +3,11 @@
     <div>
       <h2>Bienvenido al dashboard de Smedico</h2>
       <p class="dashboard__subtitle">
-        Este panel mostrará métricas agregadas cuando los servicios estén disponibles.
+        Consulta los indicadores principales de pacientes y equipo administrativo.
       </p>
     </div>
-    <button class="btn-primary" type="button" disabled>
-      Generar métricas
+    <button class="btn-primary" type="button" (click)="refresh()" [disabled]="loading()">
+      {{ loading() ? 'Actualizando…' : 'Actualizar métricas' }}
     </button>
   </header>
 
