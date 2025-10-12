@@ -63,7 +63,7 @@ export class AsistentesComponent implements OnInit {
       apellido: item.apellido,
       email: item.email,
       telefono: item.telefono,
-      dni: item.dni
+      dni: item.dni.toString()
     });
   }
 
@@ -156,7 +156,7 @@ export class AsistentesComponent implements OnInit {
       apellido: raw.apellido.trim(),
       email: raw.email.trim(),
       telefono: raw.telefono.trim(),
-      dni: raw.dni.trim()
+      dni: Number(raw.dni.trim())
     };
   }
 

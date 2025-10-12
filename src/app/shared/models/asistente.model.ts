@@ -4,7 +4,7 @@ export interface Asistente {
   apellido: string;
   email: string;
   telefono: string;
-  dni: string;
+  dni: number;
 }
 
 export interface AsistenteCreate {
@@ -12,7 +12,7 @@ export interface AsistenteCreate {
   apellido: string;
   email: string;
   telefono: string;
-  dni: string;
+  dni: number;
 }
 
 export interface AsistenteUpdate {
@@ -20,5 +20,5 @@ export interface AsistenteUpdate {
   apellido: string;
   email: string;
   telefono: string;
-  dni: string;
+  dni: number;
 }

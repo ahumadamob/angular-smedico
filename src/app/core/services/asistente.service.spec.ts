@@ -32,7 +32,7 @@ describe('AsistenteService', () => {
         apellido: 'Fernández',
         email: 'lucia@example.com',
         telefono: '1144444444',
-        dni: '33444555'
+        dni: 33444555
       }
     ];
 
