@@ -1,0 +1,153 @@
+<section class="feature">
+  <header class="feature__header">
+    <div>
+      <h2>Pacientes</h2>
+      <p class="feature__subtitle">Administra la información básica de los pacientes registrados.</p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="startCreate()" [disabled]="saving() || deleting()">
+      Nuevo paciente
+    </button>
+  </header>
+
+  <div class="feature__body">
+    <div class="alert alert--error" *ngIf="error() as errorMessage">{{ errorMessage }}</div>
+
+    <div class="card">
+      <div class="card__body">
+        <div class="table-wrapper" *ngIf="hasItems(); else emptyState">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>DNI</th>
+                <th>Email</th>
+                <th>Fecha de nacimiento</th>
+                <th>Teléfono</th>
+                <th class="table__actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items(); trackBy: trackById">
+                <td>{{ item.id | number }}</td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.apellido }}</td>
+                <td>{{ item.dni }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.fechaNacimiento ? (item.fechaNacimiento | date : 'dd/MM/yyyy') : '—' }}</td>
+                <td>{{ item.telefono }}</td>
+                <td class="table__actions">
+                  <button type="button" class="btn btn--ghost" (click)="startEdit(item)" [disabled]="saving() || deleting()">
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn--danger"
+                    (click)="promptDelete(item)"
+                    [disabled]="saving() || deleting()"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyState>
+          <div class="empty" *ngIf="!loading(); else loadingState">
+            <p>No hay pacientes registrados.</p>
+          </div>
+        </ng-template>
+        <ng-template #loadingState>
+          <div class="loading">Cargando pacientes...</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="card form-card" *ngIf="showForm()">
+      <form [formGroup]="form" (ngSubmit)="submitForm()">
+        <h3 class="form-card__title">{{ selectedItem() ? 'Editar paciente' : 'Nuevo paciente' }}</h3>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Nombre</span>
+            <input type="text" formControlName="nombre" [class.invalid]="form.controls.nombre.invalid && form.controls.nombre.touched" />
+            <span class="error" *ngIf="form.controls.nombre.errors && form.controls.nombre.touched">
+              <ng-container *ngIf="form.controls.nombre.hasError('required')">El nombre es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('minlength')">Debe tener al menos 2 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('maxlength')">No debe superar 50 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('api')">{{ form.controls.nombre.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Apellido</span>
+            <input type="text" formControlName="apellido" [class.invalid]="form.controls.apellido.invalid && form.controls.apellido.touched" />
+            <span class="error" *ngIf="form.controls.apellido.errors && form.controls.apellido.touched">
+              <ng-container *ngIf="form.controls.apellido.hasError('required')">El apellido es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.apellido.hasError('minlength')">Debe tener al menos 2 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.apellido.hasError('maxlength')">No debe superar 50 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.apellido.hasError('api')">{{ form.controls.apellido.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>DNI</span>
+            <input type="text" formControlName="dni" [class.invalid]="form.controls.dni.invalid && form.controls.dni.touched" />
+            <span class="error" *ngIf="form.controls.dni.errors && form.controls.dni.touched">
+              <ng-container *ngIf="form.controls.dni.hasError('required')">El DNI es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.dni.hasError('pattern')">Debe contener entre 7 y 10 dígitos.</ng-container>
+              <ng-container *ngIf="form.controls.dni.hasError('api')">{{ form.controls.dni.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" formControlName="email" [class.invalid]="form.controls.email.invalid && form.controls.email.touched" />
+            <span class="error" *ngIf="form.controls.email.errors && form.controls.email.touched">
+              <ng-container *ngIf="form.controls.email.hasError('required')">El email es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.email.hasError('email')">Debe tener un formato válido.</ng-container>
+              <ng-container *ngIf="form.controls.email.hasError('api')">{{ form.controls.email.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Fecha de nacimiento</span>
+            <input type="date" formControlName="fechaNacimiento" />
+          </label>
+
+          <label class="form-field">
+            <span>Teléfono</span>
+            <input type="tel" formControlName="telefono" [class.invalid]="form.controls.telefono.invalid && form.controls.telefono.touched" />
+            <span class="error" *ngIf="form.controls.telefono.errors && form.controls.telefono.touched">
+              <ng-container *ngIf="form.controls.telefono.hasError('required')">El teléfono es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.telefono.hasError('pattern')">Debe contener entre 7 y 15 dígitos.</ng-container>
+              <ng-container *ngIf="form.controls.telefono.hasError('api')">{{ form.controls.telefono.getError('api') }}</ng-container>
+            </span>
+          </label>
+        </div>
+
+        <div class="form-card__actions">
+          <button type="button" class="btn btn--ghost" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+          <button type="submit" class="btn btn--primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="confirmDeleteOpen()"
+  title="Eliminar paciente"
+  message="¿Seguro que deseas eliminar este paciente?"
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  [busy]="deleting()"
+  busyLabel="Eliminando..."
+  [confirmDestructive]="true"
+  (cancel)="closeDeleteDialog()"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>

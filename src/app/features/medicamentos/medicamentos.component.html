@@ -1,0 +1,120 @@
+<section class="feature">
+  <header class="feature__header">
+    <div>
+      <h2>Medicamentos</h2>
+      <p class="feature__subtitle">Gestiona el vademécum disponible para las recetas.</p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="startCreate()" [disabled]="saving() || deleting()">
+      Nuevo medicamento
+    </button>
+  </header>
+
+  <div class="feature__body">
+    <div class="alert alert--error" *ngIf="error() as errorMessage">{{ errorMessage }}</div>
+
+    <div class="card">
+      <div class="card__body">
+        <div class="table-wrapper" *ngIf="hasItems(); else emptyState">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Presentación</th>
+                <th>Dosis sugerida</th>
+                <th class="table__actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items(); trackBy: trackById">
+                <td>{{ item.id | number }}</td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.presentacion }}</td>
+                <td>{{ item.dosisSugerida || 'No especificada' }}</td>
+                <td class="table__actions">
+                  <button type="button" class="btn btn--ghost" (click)="startEdit(item)" [disabled]="saving() || deleting()">
+                    Editar
+                  </button>
+                  <button type="button" class="btn btn--danger" (click)="promptDelete(item)" [disabled]="saving() || deleting()">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyState>
+          <div class="empty" *ngIf="!loading(); else loadingState">
+            <p>No hay medicamentos cargados.</p>
+          </div>
+        </ng-template>
+        <ng-template #loadingState>
+          <div class="loading">Cargando medicamentos...</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="card form-card" *ngIf="showForm()">
+      <form [formGroup]="form" (ngSubmit)="submitForm()">
+        <h3 class="form-card__title">{{ selectedItem() ? 'Editar medicamento' : 'Nuevo medicamento' }}</h3>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Nombre</span>
+            <input type="text" formControlName="nombre" [class.invalid]="form.controls.nombre.invalid && form.controls.nombre.touched" />
+            <span class="error" *ngIf="form.controls.nombre.errors && form.controls.nombre.touched">
+              <ng-container *ngIf="form.controls.nombre.hasError('required')">El nombre es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('minlength')">Debe tener al menos 2 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('maxlength')">No debe superar 100 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('api')">{{ form.controls.nombre.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Presentación</span>
+            <input
+              type="text"
+              formControlName="presentacion"
+              [class.invalid]="form.controls.presentacion.invalid && form.controls.presentacion.touched"
+            />
+            <span class="error" *ngIf="form.controls.presentacion.errors && form.controls.presentacion.touched">
+              <ng-container *ngIf="form.controls.presentacion.hasError('required')">La presentación es obligatoria.</ng-container>
+              <ng-container *ngIf="form.controls.presentacion.hasError('minlength')">Debe tener al menos 2 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.presentacion.hasError('maxlength')">No debe superar 50 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.presentacion.hasError('api')">{{ form.controls.presentacion.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field form-field--full">
+            <span>Dosis sugerida</span>
+            <input type="text" formControlName="dosisSugerida" [class.invalid]="form.controls.dosisSugerida.invalid && form.controls.dosisSugerida.touched" />
+            <span class="error" *ngIf="form.controls.dosisSugerida.errors && form.controls.dosisSugerida.touched">
+              <ng-container *ngIf="form.controls.dosisSugerida.hasError('maxlength')">No debe superar 100 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.dosisSugerida.hasError('api')">{{ form.controls.dosisSugerida.getError('api') }}</ng-container>
+            </span>
+          </label>
+        </div>
+
+        <div class="form-card__actions">
+          <button type="button" class="btn btn--ghost" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+          <button type="submit" class="btn btn--primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="confirmDeleteOpen()"
+  title="Eliminar medicamento"
+  message="¿Seguro que deseas eliminar este medicamento?"
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  [busy]="deleting()"
+  busyLabel="Eliminando..."
+  [confirmDestructive]="true"
+  (cancel)="closeDeleteDialog()"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>

@@ -1,0 +1,42 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <span class="brand__name">Smedico</span>
+      <span class="environment-pill">{{ environmentLabel() }}</span>
+    </div>
+    <nav class="sidebar__nav">
+      <a
+        *ngFor="let link of navigationLinks(); trackBy: trackByRoute"
+        class="nav-link"
+        [routerLink]="link.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: link.exact }"
+      >
+        <span class="nav-link__indicator"></span>
+        <span class="nav-link__label">{{ link.label }}</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="content">
+    <header class="header">
+      <div class="header__title">
+        <h1>Panel administrativo Smedico</h1>
+        <p class="header__subtitle">Configuración inicial del workspace</p>
+      </div>
+      <div class="header__actions">
+        <button type="button" class="btn btn--ghost" disabled>Sin notificaciones</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="main__inner">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>&copy; {{ currentYear }} Smedico. Todos los derechos reservados.</span>
+    </footer>
+  </div>
+</div>

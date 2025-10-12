@@ -1,0 +1,127 @@
+<section class="feature">
+  <header class="feature__header">
+    <div>
+      <h2>Obras sociales</h2>
+      <p class="feature__subtitle">Registra y actualiza la información de cobertura de las obras sociales.</p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="startCreate()" [disabled]="saving() || deleting()">
+      Nueva obra social
+    </button>
+  </header>
+
+  <div class="feature__body">
+    <div class="alert alert--error" *ngIf="error() as errorMessage">{{ errorMessage }}</div>
+
+    <div class="card">
+      <div class="card__body">
+        <div class="table-wrapper" *ngIf="hasItems(); else emptyState">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Cobertura</th>
+                <th class="table__actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items(); trackBy: trackById">
+                <td>{{ item.id | number }}</td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.telefono || '—' }}</td>
+                <td>{{ item.direccion }}</td>
+                <td>{{ item.cobertura }}</td>
+                <td class="table__actions">
+                  <button type="button" class="btn btn--ghost" (click)="startEdit(item)" [disabled]="saving() || deleting()">
+                    Editar
+                  </button>
+                  <button type="button" class="btn btn--danger" (click)="promptDelete(item)" [disabled]="saving() || deleting()">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyState>
+          <div class="empty" *ngIf="!loading(); else loadingState">
+            <p>No hay obras sociales registradas.</p>
+          </div>
+        </ng-template>
+        <ng-template #loadingState>
+          <div class="loading">Cargando obras sociales...</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="card form-card" *ngIf="showForm()">
+      <form [formGroup]="form" (ngSubmit)="submitForm()">
+        <h3 class="form-card__title">{{ selectedItem() ? 'Editar obra social' : 'Nueva obra social' }}</h3>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Nombre</span>
+            <input type="text" formControlName="nombre" [class.invalid]="form.controls.nombre.invalid && form.controls.nombre.touched" />
+            <span class="error" *ngIf="form.controls.nombre.errors && form.controls.nombre.touched">
+              <ng-container *ngIf="form.controls.nombre.hasError('required')">El nombre es obligatorio.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('maxlength')">No debe superar 100 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.nombre.hasError('api')">{{ form.controls.nombre.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field">
+            <span>Teléfono</span>
+            <input type="text" formControlName="telefono" [class.invalid]="form.controls.telefono.invalid && form.controls.telefono.touched" />
+            <span class="error" *ngIf="form.controls.telefono.errors && form.controls.telefono.touched">
+              <ng-container *ngIf="form.controls.telefono.hasError('maxlength')">No debe superar 20 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.telefono.hasError('pattern')">Solo se permiten números y símbolos + - ( ).</ng-container>
+              <ng-container *ngIf="form.controls.telefono.hasError('api')">{{ form.controls.telefono.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field form-field--full">
+            <span>Dirección</span>
+            <input type="text" formControlName="direccion" [class.invalid]="form.controls.direccion.invalid && form.controls.direccion.touched" />
+            <span class="error" *ngIf="form.controls.direccion.errors && form.controls.direccion.touched">
+              <ng-container *ngIf="form.controls.direccion.hasError('required')">La dirección es obligatoria.</ng-container>
+              <ng-container *ngIf="form.controls.direccion.hasError('maxlength')">No debe superar 150 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.direccion.hasError('api')">{{ form.controls.direccion.getError('api') }}</ng-container>
+            </span>
+          </label>
+
+          <label class="form-field form-field--full">
+            <span>Cobertura</span>
+            <textarea rows="3" formControlName="cobertura" [class.invalid]="form.controls.cobertura.invalid && form.controls.cobertura.touched"></textarea>
+            <span class="error" *ngIf="form.controls.cobertura.errors && form.controls.cobertura.touched">
+              <ng-container *ngIf="form.controls.cobertura.hasError('required')">La cobertura es obligatoria.</ng-container>
+              <ng-container *ngIf="form.controls.cobertura.hasError('maxlength')">No debe superar 100 caracteres.</ng-container>
+              <ng-container *ngIf="form.controls.cobertura.hasError('api')">{{ form.controls.cobertura.getError('api') }}</ng-container>
+            </span>
+          </label>
+        </div>
+
+        <div class="form-card__actions">
+          <button type="button" class="btn btn--ghost" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+          <button type="submit" class="btn btn--primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="confirmDeleteOpen()"
+  title="Eliminar obra social"
+  message="¿Seguro que deseas eliminar esta obra social?"
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  [busy]="deleting()"
+  busyLabel="Eliminando..."
+  [confirmDestructive]="true"
+  (cancel)="closeDeleteDialog()"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>

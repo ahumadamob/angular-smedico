@@ -1,0 +1,43 @@
+<section
+  *ngIf="open"
+  class="confirm-dialog"
+  role="presentation"
+>
+  <div class="confirm-dialog__backdrop" (click)="onBackdropClick()" data-testid="confirm-dialog-backdrop"></div>
+
+  <div
+    class="confirm-dialog__panel card"
+    role="dialog"
+    [attr.aria-modal]="true"
+    [attr.aria-labelledby]="titleId"
+    [attr.aria-describedby]="messageId"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="confirm-dialog__header">
+      <h2 class="confirm-dialog__title" [id]="titleId">{{ title }}</h2>
+    </header>
+
+    <div class="confirm-dialog__body" [id]="messageId">
+      <p>{{ message }}</p>
+    </div>
+
+    <footer class="confirm-dialog__footer">
+      <button
+        type="button"
+        class="btn-ghost"
+        (click)="onCancelClicked($event)"
+        [disabled]="busy"
+      >
+        {{ cancelLabel }}
+      </button>
+      <button
+        type="button"
+        [ngClass]="confirmButtonClass"
+        (click)="onConfirmClicked($event)"
+        [disabled]="busy"
+      >
+        {{ busy ? busyLabel : confirmLabel }}
+      </button>
+    </footer>
+  </div>
+</section>
